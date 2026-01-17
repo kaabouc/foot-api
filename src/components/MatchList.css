@@ -1,0 +1,39 @@
+.match-list {
+  width: 100%;
+}
+
+.no-matches {
+  text-align: center;
+  padding: 60px 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.no-matches p {
+  font-size: 18px;
+  color: #666;
+  margin: 0 0 10px 0;
+}
+
+.no-matches-info {
+  font-size: 14px;
+  color: #999;
+  font-style: italic;
+  margin-top: 10px !important;
+}
+
+.no-matches-info p {
+  margin: 5px 0;
+}
+
+.no-matches-hint {
+  font-size: 12px;
+  color: #777;
+  margin-top: 10px !important;
+  padding: 10px;
+  background: #f5f5f5;
+  border-radius: 4px;
+  border-left: 3px solid #ff9800;
+}
+

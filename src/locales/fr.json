@@ -1,0 +1,50 @@
+{
+  "header": {
+    "title": "Matchs de Football",
+    "subtitle": "Suivez tous les matchs d'aujourd'hui"
+  },
+  "filters": {
+    "yesterday": "Matchs d'hier",
+    "today": "Matchs d'aujourd'hui",
+    "tomorrow": "Matchs de demain",
+    "timezone": "Heure de Riyad"
+  },
+  "search": {
+    "placeholder": "🔍 Rechercher une équipe...",
+    "allLeagues": "Toutes les compétitions"
+  },
+  "matches": {
+    "title": "Calendrier des matchs",
+    "noMatches": "Aucun match disponible",
+    "noMatchesInfo": "Aucun match disponible pour cette date.",
+    "loading": "Chargement des matchs...",
+    "from": "de",
+    "page": "Page",
+    "of": "sur"
+  },
+  "match": {
+    "finished": "Terminé",
+    "live": "En direct",
+    "notStarted": "Pas encore commencé",
+    "unknown": "Inconnu"
+  },
+  "pagination": {
+    "previous": "Précédent",
+    "next": "Suivant"
+  },
+  "competitions": {
+    "internationalNational": "🌍 International (Équipes Nationales)",
+    "internationalClub": "🏆 International (Compétitions de Clubs)",
+    "topDomestic": "⭐ Top Ligues Domestiques (Les Plus Regardées)",
+    "otherDomestic": "📋 Autres Ligues Domestiques Majeures",
+    "maghreb": "🇲🇦🇩🇿🇹🇳 Ligues du Maghreb"
+  },
+  "errors": {
+    "apiKey": "⚠️ Clé API non configurée. Vérifiez votre fichier .env et redémarrez le serveur.",
+    "proxy": "⚠️ Serveur proxy non démarré. Lancez \"npm run proxy\" dans un terminal séparé.",
+    "apiError": "⚠️ Erreur API: {message}",
+    "generic": "⚠️ Erreur lors de la récupération des données API. Vérifiez votre connexion internet et vos clés API.",
+    "loading": "Erreur lors du chargement des matchs. Vérifiez votre connexion internet et votre clé API."
+  }
+}
+

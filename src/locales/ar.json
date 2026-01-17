@@ -1,0 +1,50 @@
+{
+  "header": {
+    "title": "مباريات كرة القدم",
+    "subtitle": "تابع جميع المباريات اليوم"
+  },
+  "filters": {
+    "yesterday": "مباريات الأمس",
+    "today": "مباريات اليوم",
+    "tomorrow": "مباريات الغد",
+    "timezone": "بتوقيت الرياض"
+  },
+  "search": {
+    "placeholder": "ابحث عن فريق...",
+    "allLeagues": "جميع البطولات"
+  },
+  "matches": {
+    "title": "جدول المباريات",
+    "noMatches": "لا توجد مباريات متاحة",
+    "noMatchesInfo": "Aucun match disponible pour cette date.",
+    "loading": "Chargement des matchs...",
+    "from": "من",
+    "page": "صفحة",
+    "of": "من"
+  },
+  "match": {
+    "finished": "انتهت",
+    "live": "مباشر",
+    "notStarted": "لم تبدأ بعد",
+    "unknown": "غير معروف"
+  },
+  "pagination": {
+    "previous": "السابق",
+    "next": "التالي"
+  },
+  "competitions": {
+    "internationalNational": "🌍 International (National Teams)",
+    "internationalClub": "🏆 International (Club Competitions)",
+    "topDomestic": "⭐ Top Domestic Leagues (Most Watched)",
+    "otherDomestic": "📋 Other Major Domestic Leagues",
+    "maghreb": "🇲🇦🇩🇿🇹🇳 Maghreb Leagues"
+  },
+  "errors": {
+    "apiKey": "⚠️ Clé API non configurée. Vérifiez votre fichier .env et redémarrez le serveur.",
+    "proxy": "⚠️ Serveur proxy non démarré. Lancez \"npm run proxy\" dans un terminal séparé.",
+    "apiError": "⚠️ Erreur API: {message}",
+    "generic": "⚠️ Erreur lors de la récupération des données API. Vérifiez votre connexion internet et vos clés API.",
+    "loading": "Erreur lors du chargement des matchs. Vérifiez votre connexion internet et votre clé API."
+  }
+}
+
