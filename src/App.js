@@ -7,6 +7,12 @@ import AdvancedFilters, { FiltersButton } from './components/AdvancedFilters';
 import Pagination from './components/Pagination';
 import { fetchTodayMatches, fetchYesterdayMatches, fetchTomorrowMatches } from './services/apiService';
 import { useTranslation } from './contexts/LanguageContext';
+import {
+  getMatchesWithCache,
+  startCacheAutoUpdate,
+  getAllDates,
+  getServerTimezone
+} from './services/cacheService';
 
 // Liste de toutes les compétitions autorisées (doit correspondre à COMPETITION_CATEGORIES dans SearchAndFilter.js)
 const ALLOWED_COMPETITIONS = [
@@ -57,15 +63,48 @@ function App() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const matchesPerPage = 20;
+  
+  // Variables pour le cache et le timezone
+  const [serverTimezone, setServerTimezone] = useState(null);
+  const [cacheDates, setCacheDates] = useState(null);
+
+  // Initialiser le système de cache au montage du composant
+  useEffect(() => {
+    // Obtenir le timezone et les dates
+    const timezone = getServerTimezone();
+    const dates = getAllDates();
+    
+    setServerTimezone(timezone);
+    setCacheDates(dates);
+    
+    console.log('🌍 Server Timezone:', timezone);
+    console.log('📅 Cache Dates:', dates);
+    
+    // Démarrer le système de mise à jour automatique du cache
+    const intervalId = startCacheAutoUpdate(
+      fetchYesterdayMatches,
+      fetchTodayMatches,
+      fetchTomorrowMatches
+    );
+    
+    // Nettoyer l'intervalle au démontage
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, []);
 
   // Get today's date in YYYY-MM-DD format
   const getTodayDate = () => {
+    if (cacheDates) return cacheDates.today;
     const today = new Date();
     return today.toISOString().split('T')[0];
   };
 
   // Get yesterday's date
   const getYesterdayDate = () => {
+    if (cacheDates) return cacheDates.yesterday;
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     return yesterday.toISOString().split('T')[0];
@@ -73,31 +112,36 @@ function App() {
 
   // Get tomorrow's date
   const getTomorrowDate = () => {
+    if (cacheDates) return cacheDates.tomorrow;
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     return tomorrow.toISOString().split('T')[0];
   };
 
-  // Fonction pour charger les matchs depuis l'API ou les données mockées
+  // Fonction pour charger les matchs depuis le cache ou l'API
   const loadMatches = async (filter) => {
     setLoading(true);
     setError(null);
 
     try {
       let fetchedMatches = [];
+      let date = '';
 
-      // Toujours utiliser l'API - pas de données mockées
+      // Utiliser le cache pour optimiser les requêtes API
       try {
           switch (filter) {
             case 'yesterday':
-              fetchedMatches = await fetchYesterdayMatches();
+              date = getYesterdayDate();
+              fetchedMatches = await getMatchesWithCache(date, fetchYesterdayMatches);
               break;
             case 'tomorrow':
-              fetchedMatches = await fetchTomorrowMatches();
+              date = getTomorrowDate();
+              fetchedMatches = await getMatchesWithCache(date, fetchTomorrowMatches);
               break;
             case 'today':
             default:
-              fetchedMatches = await fetchTodayMatches();
+              date = getTodayDate();
+              fetchedMatches = await getMatchesWithCache(date, fetchTodayMatches);
               break;
           }
           
@@ -330,7 +374,7 @@ function App() {
 
   return (
     <div className="App">
-      <Header />
+      <Header serverTimezone={serverTimezone} />
       <main className="main-content">
         <div className="container">
           <FilterButtons 

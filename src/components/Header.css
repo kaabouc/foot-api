@@ -89,6 +89,27 @@
   font-weight: 600;
 }
 
+.timezone-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.timezone-label {
+  font-weight: 500;
+}
+
+.timezone-value {
+  font-weight: 600;
+  color: #374151;
+  background: rgba(0, 0, 0, 0.05);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
 .koora-button {
   background: #ef4444;
   color: white;

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './Header.css';
 import { useTranslation } from '../contexts/LanguageContext';
 
-const Header = () => {
+const Header = ({ serverTimezone }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const { language, changeLanguage, t } = useTranslation();
 
@@ -38,6 +38,12 @@ const Header = () => {
         <div className="logo-section">
           <h1 className="logo-text">koora live</h1>
           <span className="logo-text-arabic">كورة لايف</span>
+          {serverTimezone && (
+            <div className="timezone-info">
+              <span className="timezone-label">🌍 {language === 'ar' ? 'المنطقة الزمنية' : 'Timezone'}:</span>
+              <span className="timezone-value">{serverTimezone}</span>
+            </div>
+          )}
         </div>
         <button className="koora-button">
           koora live ©
