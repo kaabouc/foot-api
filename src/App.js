@@ -3,7 +3,7 @@ import './App.css';
 import Header from './components/Header';
 import FilterButtons from './components/FilterButtons';
 import MatchList from './components/MatchList';
-import SearchAndFilter from './components/SearchAndFilter';
+import AdvancedFilters, { FiltersButton } from './components/AdvancedFilters';
 import Pagination from './components/Pagination';
 import { fetchTodayMatches, fetchYesterdayMatches, fetchTomorrowMatches } from './services/apiService';
 import { useTranslation } from './contexts/LanguageContext';
@@ -49,9 +49,13 @@ function App() {
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedLeague, setSelectedLeague] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [filters, setFilters] = useState({
+    competition: [],
+    country: [],
+    status: []
+  });
   const [currentPage, setCurrentPage] = useState(1);
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const matchesPerPage = 20;
 
   // Get today's date in YYYY-MM-DD format
@@ -172,12 +176,15 @@ function App() {
   const handleFilterChange = (filter) => {
     setActiveFilter(filter);
     // Réinitialiser les filtres quand on change de date
-    setSelectedLeague('');
-    setSearchTerm('');
+    setFilters({
+      competition: [],
+      country: [],
+      status: []
+    });
     setCurrentPage(1); // Réinitialiser à la page 1
   };
 
-  // Filtrer les matchs selon la compétition et la recherche
+  // Filtrer les matchs selon tous les critères
   const filteredMatches = useMemo(() => {
     let filtered = matches;
 
@@ -187,24 +194,111 @@ function App() {
       return isAllowedCompetition(leagueName);
     });
 
-    // Filtrer par compétition spécifique si sélectionnée
-    if (selectedLeague) {
+    // Filtrer par compétitions (sélection multiple)
+    if (filters.competition && filters.competition.length > 0) {
       filtered = filtered.filter(match => 
-        (match.leagueEn || match.league) === selectedLeague
+        filters.competition.includes(match.leagueEn || match.league)
       );
     }
 
-    // Filtrer par recherche d'équipe
-    if (searchTerm.trim()) {
-      const search = searchTerm.toLowerCase().trim();
+    // Filtrer par pays (sélection multiple)
+    if (filters.country && filters.country.length > 0) {
+      console.log('🔍 Filtering by country:', filters.country);
+      const beforeCount = filtered.length;
+      
+      // Fonction de normalisation (identique à celle dans apiService.js)
+      const normalizeCountry = (country) => {
+        if (!country) return null;
+        
+        // Remplacer les tirets par des espaces
+        let normalized = country.replace(/-/g, ' ').trim();
+        
+        const countryMap = {
+          'Morocco': 'Maroc',
+          'USA': 'United States',
+          'United States': 'United States',
+          'UAE': 'United Arab Emirates',
+          'United Arab Emirates': 'United Arab Emirates',
+          'Ivory Coast': 'Côte d\'Ivoire',
+          'Côte d\'Ivoire': 'Côte d\'Ivoire',
+          'Cote d\'Ivoire': 'Côte d\'Ivoire',
+          'Congo DR': 'Congo DR',
+          'Congo-DR': 'Congo DR',
+          'Congo D R': 'Congo DR',
+          'Trinidad And Tobago': 'Trinidad and Tobago',
+          'Trinidad-And-Tobago': 'Trinidad and Tobago',
+          'Costa Rica': 'Costa Rica',
+          'Costa-Rica': 'Costa Rica',
+          'Saudi Arabia': 'Saudi Arabia',
+          'Saudi-Arabia': 'Saudi Arabia',
+          'Hong Kong': 'Hong Kong',
+          'Hong-Kong': 'Hong Kong',
+        };
+        
+        // Vérifier dans la map avec le nom original et normalisé
+        if (countryMap[country]) {
+          return countryMap[country];
+        }
+        if (countryMap[normalized]) {
+          return countryMap[normalized];
+        }
+        
+        // Retourner la version normalisée (sans tirets)
+        return normalized;
+      };
+      
+      filtered = filtered.filter(match => {
+        if (!match.country) {
+          console.log(`⚠️ Match has no country: ${match.team1.name} vs ${match.team2.name}`);
+          return false;
+        }
+        
+        // Normaliser le pays du match (remplacer tirets par espaces, etc.)
+        const normalizedMatchCountry = normalizeCountry(match.country);
+        
+        // Normaliser aussi les pays dans les filtres pour la comparaison
+        const normalizedFilters = filters.country.map(fc => normalizeCountry(fc));
+        
+        // Comparaison insensible à la casse et aux variations
+        const matchCountryLower = normalizedMatchCountry?.toLowerCase() || '';
+        const originalMatchCountryLower = match.country?.toLowerCase() || '';
+        
+        const matchesFilter = normalizedFilters.some(nf => {
+          const nfLower = nf?.toLowerCase() || '';
+          return nfLower === matchCountryLower || 
+                 nfLower === originalMatchCountryLower ||
+                 matchCountryLower.includes(nfLower) ||
+                 nfLower.includes(matchCountryLower);
+        }) || filters.country.some(fc => {
+          const fcLower = fc?.toLowerCase() || '';
+          return fcLower === matchCountryLower || 
+                 fcLower === originalMatchCountryLower ||
+                 matchCountryLower.includes(fcLower) ||
+                 fcLower.includes(matchCountryLower);
+        });
+        
+        if (matchesFilter) {
+          console.log(`✅ Match country "${match.country}" (normalized: "${normalizedMatchCountry}") matches filter`);
+        } else {
+          console.log(`❌ Match country "${match.country}" (normalized: "${normalizedMatchCountry}") does NOT match filter`);
+        }
+        
+        return matchesFilter;
+      });
+      
+      console.log(`📊 Country filter: ${beforeCount} → ${filtered.length} matches`);
+    }
+
+    // Filtrer par statut (sélection multiple)
+    if (filters.status && filters.status.length > 0) {
       filtered = filtered.filter(match => 
-        (match.team1.nameEn || match.team1.name).toLowerCase().includes(search) ||
-        (match.team2.nameEn || match.team2.name).toLowerCase().includes(search)
+        filters.status.includes(match.status)
       );
     }
+
 
     return filtered;
-  }, [matches, selectedLeague, searchTerm]);
+  }, [matches, filters]);
 
   // Calculer la pagination
   const totalPages = Math.ceil(filteredMatches.length / matchesPerPage);
@@ -219,7 +313,7 @@ function App() {
   // Réinitialiser à la page 1 quand les filtres changent
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedLeague, searchTerm]);
+  }, [filters]);
 
   // Obtenir les matchs de la page actuelle
   const paginatedMatches = useMemo(() => {
@@ -258,13 +352,20 @@ function App() {
           ) : (
             <>
               {matches.length > 0 && (
-                <SearchAndFilter
-                  matches={matches}
-                  selectedLeague={selectedLeague}
-                  onLeagueChange={setSelectedLeague}
-                  searchTerm={searchTerm}
-                  onSearchChange={setSearchTerm}
-                />
+                <>
+                  <FiltersButton 
+                    onClick={() => setIsFiltersOpen(true)}
+                    activeFiltersCount={Object.values(filters).reduce((sum, arr) => sum + (Array.isArray(arr) ? arr.length : 0), 0)}
+                  />
+                  <AdvancedFilters
+                    matches={matches}
+                    filters={filters}
+                    onFiltersChange={setFilters}
+                    isOpen={isFiltersOpen}
+                    onClose={() => setIsFiltersOpen(false)}
+                    filteredMatchesCount={filteredMatches.length}
+                  />
+                </>
               )}
               
               <div className="matches-section">

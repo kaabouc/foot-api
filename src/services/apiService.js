@@ -53,6 +53,48 @@ const formatDate = (date) => {
   return date.toISOString().split('T')[0];
 };
 
+// Fonction pour normaliser les noms de pays pour correspondre aux filtres
+const normalizeCountryName = (country) => {
+  if (!country) return null;
+  
+  // D'abord, remplacer les tirets par des espaces (API utilise souvent des tirets)
+  let normalized = country.replace(/-/g, ' ').trim();
+  
+  // Map de normalisation pour les cas spéciaux
+  const countryMap = {
+    'Morocco': 'Maroc',
+    'USA': 'United States',
+    'United States': 'United States',
+    'UAE': 'United Arab Emirates',
+    'United Arab Emirates': 'United Arab Emirates',
+    'Ivory Coast': 'Côte d\'Ivoire',
+    'Côte d\'Ivoire': 'Côte d\'Ivoire',
+    'Cote d\'Ivoire': 'Côte d\'Ivoire',
+    'Congo DR': 'Congo DR',
+    'Congo-DR': 'Congo DR',
+    'Congo D R': 'Congo DR',
+    'Trinidad And Tobago': 'Trinidad and Tobago',
+    'Trinidad-And-Tobago': 'Trinidad and Tobago',
+    'Costa Rica': 'Costa Rica',
+    'Costa-Rica': 'Costa Rica',
+    'Saudi Arabia': 'Saudi Arabia',
+    'Saudi-Arabia': 'Saudi Arabia',
+    'Hong Kong': 'Hong Kong',
+    'Hong-Kong': 'Hong Kong',
+  };
+  
+  // Vérifier si le pays (avec ou sans tirets) est dans la map
+  if (countryMap[country]) {
+    return countryMap[country];
+  }
+  if (countryMap[normalized]) {
+    return countryMap[normalized];
+  }
+  
+  // Retourner la version normalisée (sans tirets)
+  return normalized;
+};
+
 // Fonction pour convertir les données de l'API au format de notre application
 const transformApiMatch = (apiMatch, apiType = 'football-data') => {
   if (!apiMatch) {
@@ -95,6 +137,8 @@ const transformApiMatch = (apiMatch, apiType = 'football-data') => {
         },
         league: apiMatch.competition?.name || 'Unknown League',
         leagueEn: apiMatch.competition?.name || 'Unknown League',
+        leagueLogo: apiMatch.competition?.emblem || null,
+        country: normalizeCountryName(apiMatch.competition?.area?.name || apiMatch.area?.name || null),
         status: getMatchStatus(apiMatch.status),
         commentator: 'غير معروف',
         channel: 'غير معروف',
@@ -147,6 +191,7 @@ const transformApiMatch = (apiMatch, apiType = 'football-data') => {
         league: apiMatch.league?.name || apiMatch.league?.country || 'Unknown League',
         leagueEn: apiMatch.league?.name || apiMatch.league?.country || 'Unknown League',
         leagueLogo: apiMatch.league?.logo || null,
+        country: normalizeCountryName(apiMatch.league?.country) || null,
         status: getMatchStatus(apiMatch.fixture.status?.short || apiMatch.fixture.status?.long),
         commentator: 'غير معروف',
         channel: 'غير معروف',
