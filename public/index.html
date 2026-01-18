@@ -1,30 +1,100 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Web site created using create-react-app"
-    />
+    <meta name="theme-color" content="#ef4444" />
+    
+    <!-- SEO Meta Tags - Optimisé pour le Maroc -->
+    <title>كورة لايف - Koora Live | مباريات اليوم | نتائج المباريات | Morocco Football</title>
+    <meta name="description" content="كورة لايف - Koora Live: شاهد مباريات اليوم، نتائج المباريات، وأخبار كرة القدم في المغرب والعالم. متابعة مباشرة لجميع البطولات: الدوري المغربي، الدوري الإسباني، الدوري الإنجليزي، دوري أبطال أوروبا والمزيد." />
+    <meta name="keywords" content="كورة, koora, كورة لايف, koora live, مباريات اليوم, نتائج المباريات, كرة القدم المغرب, الدوري المغربي, البطولة, botola, football maroc, match foot, live score, morocco football" />
+    <meta name="author" content="Koora Live" />
+    <meta name="robots" content="index, follow" />
+    <meta name="language" content="Arabic, French" />
+    <meta name="geo.region" content="MA" />
+    <meta name="geo.country" content="Morocco" />
+    <meta name="geo.placename" content="Morocco" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://kooralive.ma/" />
+    <meta property="og:title" content="كورة لايف - Koora Live | مباريات اليوم | نتائج المباريات" />
+    <meta property="og:description" content="شاهد مباريات اليوم، نتائج المباريات، وأخبار كرة القدم في المغرب والعالم. متابعة مباشرة لجميع البطولات." />
+    <meta property="og:image" content="%PUBLIC_URL%/og-image.jpg" />
+    <meta property="og:locale" content="ar_MA" />
+    <meta property="og:locale:alternate" content="fr_MA" />
+    <meta property="og:site_name" content="Koora Live - كورة لايف" />
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://kooralive.ma/" />
+    <meta name="twitter:title" content="كورة لايف - Koora Live | مباريات اليوم" />
+    <meta name="twitter:description" content="شاهد مباريات اليوم، نتائج المباريات، وأخبار كرة القدم في المغرب والعالم." />
+    <meta name="twitter:image" content="%PUBLIC_URL%/og-image.jpg" />
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://kooralive.ma/" />
+    
+    <!-- Alternate Languages -->
+    <link rel="alternate" hreflang="ar" href="https://kooralive.ma/?lang=ar" />
+    <link rel="alternate" hreflang="fr" href="https://kooralive.ma/?lang=fr" />
+    <link rel="alternate" hreflang="x-default" href="https://kooralive.ma/" />
+    
+    <!-- Icons -->
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
-
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
-    <title>React App</title>
+    
+    <!-- Preconnect for Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Koora Live - كورة لايف",
+      "alternateName": "كورة لايف",
+      "url": "https://kooralive.ma/",
+      "description": "موقع متابعة مباريات كرة القدم اليوم، نتائج المباريات، وأخبار كرة القدم في المغرب والعالم",
+      "inLanguage": ["ar", "fr"],
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://kooralive.ma/?search={search_term_string}",
+        "query-input": "required name=search_term_string"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Koora Live",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://kooralive.ma/logo512.png"
+        }
+      }
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SportsOrganization",
+      "name": "Koora Live",
+      "alternateName": "كورة لايف",
+      "url": "https://kooralive.ma/",
+      "description": "موقع متابعة مباريات كرة القدم - Morocco Football",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "MA"
+      },
+      "sport": "Football",
+      "areaServed": {
+        "@type": "Country",
+        "name": "Morocco"
+      }
+    }
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

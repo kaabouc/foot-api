@@ -1,3 +1,23 @@
 # https://www.robotstxt.org/robotstxt.html
+# Robots.txt for Koora Live - كورة لايف
+
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /api/
+Disallow: /static/
+
+# Sitemap
+Sitemap: https://kooralive.ma/sitemap.xml
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1
+
+# Allow specific bots
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Yandex
+Allow: /

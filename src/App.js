@@ -5,6 +5,7 @@ import FilterButtons from './components/FilterButtons';
 import MatchList from './components/MatchList';
 import AdvancedFilters, { FiltersButton } from './components/AdvancedFilters';
 import Pagination from './components/Pagination';
+import SEO from './components/SEO';
 import { fetchTodayMatches, fetchYesterdayMatches, fetchTomorrowMatches } from './services/apiService';
 import { useTranslation } from './contexts/LanguageContext';
 import {
@@ -50,7 +51,7 @@ const isAllowedCompetition = (leagueName) => {
 };
 
 function App() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [activeFilter, setActiveFilter] = useState('today');
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -372,8 +373,58 @@ function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // Générer les meta tags SEO dynamiques selon le filtre actif
+  const getSEOTitle = () => {
+    const baseTitle = language === 'ar' ? 'كورة لايف - Koora Live' : 'Koora Live - كورة لايف';
+    switch (activeFilter) {
+      case 'yesterday':
+        return language === 'ar' 
+          ? `${baseTitle} | مباريات أمس | نتائج المباريات`
+          : `${baseTitle} | Matchs d'hier | Résultats`;
+      case 'tomorrow':
+        return language === 'ar'
+          ? `${baseTitle} | مباريات غداً | المباريات القادمة`
+          : `${baseTitle} | Matchs de demain | Prochains matchs`;
+      default:
+        return language === 'ar'
+          ? `${baseTitle} | مباريات اليوم | نتائج مباشرة`
+          : `${baseTitle} | Matchs d'aujourd'hui | Résultats en direct`;
+    }
+  };
+
+  const getSEODescription = () => {
+    const baseDesc = language === 'ar'
+      ? 'شاهد مباريات اليوم، نتائج المباريات، وأخبار كرة القدم في المغرب والعالم. متابعة مباشرة لجميع البطولات.'
+      : 'Regardez les matchs d\'aujourd\'hui, les résultats et les actualités du football au Maroc et dans le monde. Suivi en direct de toutes les compétitions.';
+    
+    switch (activeFilter) {
+      case 'yesterday':
+        return language === 'ar'
+          ? 'نتائج مباريات أمس - كورة لايف | جميع نتائج المباريات والبطولات'
+          : 'Résultats des matchs d\'hier - Koora Live | Tous les résultats et compétitions';
+      case 'tomorrow':
+        return language === 'ar'
+          ? 'مباريات غداً - كورة لايف | المباريات القادمة والمواعيد'
+          : 'Matchs de demain - Koora Live | Prochains matchs et horaires';
+      default:
+        return baseDesc;
+    }
+  };
+
+  const getSEOKeywords = () => {
+    const baseKeywords = 'كورة, koora, كورة لايف, koora live, مباريات اليوم, نتائج المباريات, كرة القدم المغرب, الدوري المغربي, البطولة, botola, football maroc, match foot, live score, morocco football';
+    return baseKeywords;
+  };
+
   return (
     <div className="App">
+      <SEO
+        title={getSEOTitle()}
+        description={getSEODescription()}
+        keywords={getSEOKeywords()}
+        url={`https://kooralive.ma/?filter=${activeFilter}&lang=${language}`}
+        image="https://kooralive.ma/og-image.jpg"
+      />
       <Header serverTimezone={serverTimezone} />
       <main className="main-content">
         <div className="container">
