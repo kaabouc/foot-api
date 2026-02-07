@@ -1,5 +1,4 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import './AdvancedFilters.css';
 import { useTranslation } from '../contexts/LanguageContext';
 
 const AdvancedFilters = ({ 

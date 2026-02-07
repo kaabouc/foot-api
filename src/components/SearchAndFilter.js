@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import './SearchAndFilter.css';
 import { useTranslation } from '../contexts/LanguageContext';
 
 // Organisation des compétitions par catégories

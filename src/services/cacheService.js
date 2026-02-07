@@ -70,8 +70,9 @@ export const getCachedMatches = (date) => {
   }
 };
 
-// Sauvegarder les données en cache pour une date
+// Sauvegarder les données en cache pour une date (SSR-safe)
 export const setCachedMatches = (date, data) => {
+  if (typeof window === 'undefined') return;
   try {
     const cacheKey = getCacheKey(date);
     const cacheData = {
@@ -86,8 +87,9 @@ export const setCachedMatches = (date, data) => {
   }
 };
 
-// Vérifier si le cache doit être mis à jour
+// Vérifier si le cache doit être mis à jour (SSR-safe)
 export const shouldUpdateCache = (date) => {
+  if (typeof window === 'undefined') return true;
   try {
     const cacheKey = getCacheKey(date);
     const cached = localStorage.getItem(cacheKey);
@@ -155,8 +157,9 @@ export const getMatchesWithCache = async (date, fetchFunction) => {
   }
 };
 
-// Nettoyer les anciens caches (garder seulement hier, aujourd'hui, demain)
+// Nettoyer les anciens caches (SSR-safe)
 export const cleanOldCache = () => {
+  if (typeof window === 'undefined') return;
   try {
     const dates = getAllDates();
     const validDates = [dates.yesterday, dates.today, dates.tomorrow];

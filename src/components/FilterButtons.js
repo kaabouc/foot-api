@@ -1,5 +1,4 @@
 import React from 'react';
-import './FilterButtons.css';
 import { useTranslation } from '../contexts/LanguageContext';
 
 const FilterButtons = ({ activeFilter, onFilterChange }) => {

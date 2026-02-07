@@ -9,16 +9,16 @@ const translations = {
   fr: frTranslations,
 };
 
-export const LanguageProvider = ({ children }) => {
-  // Langue par défaut : arabe
+export const LanguageProvider = ({ children, initialLanguage }) => {
+  // SSR: use initialLanguage; client: use localStorage or initialLanguage
   const [language, setLanguage] = useState(() => {
-    const savedLanguage = localStorage.getItem('app-language');
-    return savedLanguage || 'ar';
+    if (typeof window === 'undefined') return initialLanguage || 'ar';
+    return initialLanguage || localStorage.getItem('app-language') || 'ar';
   });
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     localStorage.setItem('app-language', language);
-    // Changer la direction du document selon la langue
     document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
     document.documentElement.lang = language;
   }, [language]);

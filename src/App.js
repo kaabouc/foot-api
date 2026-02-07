@@ -375,7 +375,7 @@ function App() {
 
   // Générer les meta tags SEO dynamiques selon le filtre actif
   const getSEOTitle = () => {
-    const baseTitle = language === 'ar' ? 'كورة لايف - Koora Live' : 'Koora Live - كورة لايف';
+    const baseTitle = language === 'ar' ? 'كورة للعالم - Koora for the World' : 'Koora for the World - كورة للعالم';
     switch (activeFilter) {
       case 'yesterday':
         return language === 'ar' 
@@ -400,19 +400,19 @@ function App() {
     switch (activeFilter) {
       case 'yesterday':
         return language === 'ar'
-          ? 'نتائج مباريات أمس - كورة لايف | جميع نتائج المباريات والبطولات'
-          : 'Résultats des matchs d\'hier - Koora Live | Tous les résultats et compétitions';
+          ? 'نتائج مباريات أمس - كورة للعالم | جميع نتائج المباريات والبطولات'
+          : 'Résultats des matchs d\'hier - Koora for the World | Tous les résultats et compétitions';
       case 'tomorrow':
         return language === 'ar'
-          ? 'مباريات غداً - كورة لايف | المباريات القادمة والمواعيد'
-          : 'Matchs de demain - Koora Live | Prochains matchs et horaires';
+          ? 'مباريات غداً - كورة للعالم | المباريات القادمة والمواعيد'
+          : 'Matchs de demain - Koora for the World | Prochains matchs et horaires';
       default:
         return baseDesc;
     }
   };
 
   const getSEOKeywords = () => {
-    const baseKeywords = 'كورة, koora, كورة لايف, koora live, مباريات اليوم, نتائج المباريات, كرة القدم المغرب, الدوري المغربي, البطولة, botola, football maroc, match foot, live score, morocco football';
+    const baseKeywords = 'كورة للعالم, koora for the world, كورة, koora, مباريات اليوم, نتائج المباريات, كرة القدم المغرب, الدوري المغربي, البطولة, botola, football maroc, live score, morocco football, Champions League, Premier League, La Liga';
     return baseKeywords;
   };
 
@@ -422,8 +422,8 @@ function App() {
         title={getSEOTitle()}
         description={getSEODescription()}
         keywords={getSEOKeywords()}
-        url={`https://kooralive.ma/?filter=${activeFilter}&lang=${language}`}
-        image="https://kooralive.ma/og-image.jpg"
+        url={`https://koora.marocaine.org/?filter=${activeFilter}&lang=${language}`}
+        image="https://koora.marocaine.org/og-image.jpg"
       />
       <Header serverTimezone={serverTimezone} />
       <main className="main-content">

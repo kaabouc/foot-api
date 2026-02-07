@@ -1,5 +1,4 @@
 import React from 'react';
-import './MatchCard.css';
 import { useTranslation } from '../contexts/LanguageContext';
 
 const MatchCard = ({ match }) => {

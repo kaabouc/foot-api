@@ -8,16 +8,20 @@
     "@testing-library/react": "^16.3.1",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.13.2",
+    "next": "^15.5.12",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "next start",
+    "dev": "next dev",
+    "dev:proxy": "concurrently \"node proxy-server.js\" \"next dev\"",
+    "build": "next build",
     "proxy": "node proxy-server.js",
-    "dev": "concurrently \"npm run proxy\" \"npm start\"",
-    "build": "react-scripts build",
+    "cra:start": "react-scripts start",
+    "cra:build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

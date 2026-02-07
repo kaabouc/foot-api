@@ -1,18 +1,13 @@
-# https://www.robotstxt.org/robotstxt.html
-# Robots.txt for Koora Live - كورة لايف
+# Koora for the World - كورة للعالم
+# https://koora.marocaine.org
 
 User-agent: *
 Allow: /
 Disallow: /api/
-Disallow: /static/
+Disallow: /_next/
 
-# Sitemap
-Sitemap: https://kooralive.ma/sitemap.xml
+Sitemap: https://koora.marocaine.org/sitemap.xml
 
-# Crawl-delay for respectful crawling
-Crawl-delay: 1
-
-# Allow specific bots
 User-agent: Googlebot
 Allow: /
 

@@ -1,5 +1,4 @@
 import React from 'react';
-import './Pagination.css';
 import { useTranslation } from '../contexts/LanguageContext';
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {

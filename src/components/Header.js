@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import './Header.css';
 import { useTranslation } from '../contexts/LanguageContext';
 
 const Header = ({ serverTimezone }) => {
@@ -46,7 +45,7 @@ const Header = ({ serverTimezone }) => {
           )}
         </div>
         <button className="koora-button">
-          koora live ©
+          Koora for the World ©
         </button>
       </div>
     </header>

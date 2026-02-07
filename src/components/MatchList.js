@@ -1,6 +1,5 @@
 import React from 'react';
 import MatchCard from './MatchCard';
-import './MatchList.css';
 import { useTranslation } from '../contexts/LanguageContext';
 
 const MatchList = ({ matches, isFromAPI = false }) => {
