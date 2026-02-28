@@ -32,8 +32,8 @@ export default function Document() {
         <meta name="twitter:title" content={`${SITE_NAME} | Live Football Scores`} />
         <meta name="twitter:description" content={DEFAULT_META.description} />
         <meta name="twitter:image" content={DEFAULT_META.ogImage} />
-        <link rel="icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" href="/logo192.png" />
+        <link rel="icon" href="/Logo.png" />
+        <link rel="apple-touch-icon" href="/Logo.png" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

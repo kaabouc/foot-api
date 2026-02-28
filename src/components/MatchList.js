@@ -2,37 +2,33 @@ import React from 'react';
 import MatchCard from './MatchCard';
 import { useTranslation } from '../contexts/LanguageContext';
 
-const MatchList = ({ matches, isFromAPI = false }) => {
+const MatchList = ({ matches, isFromAPI = false, activeFilter, onViewToday }) => {
   const { t } = useTranslation();
 
-  console.log('🎯 MatchList rendered with:', {
-    matchesCount: matches?.length || 0,
-    isFromAPI: isFromAPI,
-    matches: matches
-  });
-  
   if (!matches || matches.length === 0) {
-    console.log('⚠️ MatchList: No matches to display');
+    const isYesterdayOrTomorrow = activeFilter === 'yesterday' || activeFilter === 'tomorrow';
     return (
       <div className="no-matches">
         <p>{t('matches.noMatches')}</p>
         {isFromAPI && (
           <div className="no-matches-info">
             <p>{t('matches.noMatchesInfo')}</p>
+            {isYesterdayOrTomorrow && onViewToday && (
+              <button type="button" className="no-matches-try-today" onClick={onViewToday}>
+                {t('matches.viewToday')}
+              </button>
+            )}
           </div>
         )}
       </div>
     );
   }
 
-  console.log('✅ MatchList: Rendering', matches.length, 'match(es)');
-  
   return (
     <div className="match-list">
-      {matches.map((match, index) => {
-        console.log(`🎴 Rendering match ${index + 1}:`, match);
-        return <MatchCard key={match.id || `match-${index}`} match={match} />;
-      })}
+      {matches.map((match, index) => (
+        <MatchCard key={match.id || `match-${index}`} match={match} />
+      ))}
     </div>
   );
 };

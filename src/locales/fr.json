@@ -17,6 +17,7 @@
     "title": "Calendrier des matchs",
     "noMatches": "Aucun match disponible",
     "noMatchesInfo": "Aucun match disponible pour cette date.",
+    "viewToday": "Voir les matchs d'aujourd'hui",
     "loading": "Chargement des matchs...",
     "from": "de",
     "page": "Page",

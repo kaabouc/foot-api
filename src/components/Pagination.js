@@ -3,46 +3,43 @@ import { useTranslation } from '../contexts/LanguageContext';
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   const { t } = useTranslation();
-  if (totalPages <= 1) return null;
+  const pages = Math.max(1, totalPages);
+  if (pages <= 0) return null;
 
   const getPageNumbers = () => {
-    const pages = [];
+    const pageList = [];
     const maxVisible = 5;
-    
-    if (totalPages <= maxVisible) {
-      // Afficher toutes les pages si moins de 5
-      for (let i = 1; i <= totalPages; i++) {
-        pages.push(i);
+
+    if (pages <= maxVisible) {
+      for (let i = 1; i <= pages; i++) {
+        pageList.push(i);
       }
     } else {
       // Logique pour afficher les pages avec ellipses
       if (currentPage <= 3) {
-        // Début : afficher 1, 2, 3, 4, ..., dernière
         for (let i = 1; i <= 4; i++) {
-          pages.push(i);
+          pageList.push(i);
         }
-        pages.push('ellipsis');
-        pages.push(totalPages);
-      } else if (currentPage >= totalPages - 2) {
-        // Fin : afficher 1, ..., avant-dernière, dernière-1, dernière
-        pages.push(1);
-        pages.push('ellipsis');
-        for (let i = totalPages - 3; i <= totalPages; i++) {
-          pages.push(i);
+        pageList.push('ellipsis');
+        pageList.push(pages);
+      } else if (currentPage >= pages - 2) {
+        pageList.push(1);
+        pageList.push('ellipsis');
+        for (let i = pages - 3; i <= pages; i++) {
+          pageList.push(i);
         }
       } else {
-        // Milieu : afficher 1, ..., page-1, page, page+1, ..., dernière
-        pages.push(1);
-        pages.push('ellipsis');
+        pageList.push(1);
+        pageList.push('ellipsis');
         for (let i = currentPage - 1; i <= currentPage + 1; i++) {
-          pages.push(i);
+          pageList.push(i);
         }
-        pages.push('ellipsis');
-        pages.push(totalPages);
+        pageList.push('ellipsis');
+        pageList.push(pages);
       }
     }
-    
-    return pages;
+
+    return pageList;
   };
 
   const pageNumbers = getPageNumbers();
@@ -85,7 +82,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
       <button
         className="pagination-btn"
         onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
+        disabled={currentPage >= pages}
         aria-label={t('pagination.next')}
       >
         {t('pagination.next')} ›

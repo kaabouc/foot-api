@@ -35,8 +35,13 @@ const Header = ({ serverTimezone }) => {
           </div>
         </div>
         <div className="logo-section">
-          <h1 className="logo-text">koora live</h1>
-          <span className="logo-text-arabic">كورة لايف</span>
+          <img
+            src="/Logo.png"
+            alt="Koora for the World - كورة للعالم"
+            className="header-logo"
+          />
+          <h1 className="logo-text">Koora for the World</h1>
+          <span className="logo-text-arabic">كورة للعالم</span>
           {serverTimezone && (
             <div className="timezone-info">
               <span className="timezone-label">🌍 {language === 'ar' ? 'المنطقة الزمنية' : 'Timezone'}:</span>

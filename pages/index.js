@@ -1,29 +1,19 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import Header from '../src/components/Header';
-import FilterButtons from '../src/components/FilterButtons';
-import MatchList from '../src/components/MatchList';
-import AdvancedFilters, { FiltersButton } from '../src/components/AdvancedFilters';
-import Pagination from '../src/components/Pagination';
+import { Header, FilterButtons, MatchList, AdvancedFilters, FiltersButton } from '../src/components/AllInOne';
 import { fetchTodayMatches, fetchYesterdayMatches, fetchTomorrowMatches } from '../src/services/apiService';
 import { getMatchesWithCache, startCacheAutoUpdate, getAllDates, getServerTimezone } from '../src/services/cacheService';
 import { useTranslation } from '../src/contexts/LanguageContext';
-import { isAllowedCompetition } from '../src/constants/competitions';
 import { SITE_URL, SEO_KEYWORDS } from '../src/constants/seo';
 
-const MATCHES_PER_PAGE = 20;
-
-function filterMatchesByAllowed(matches) {
-  return (matches || []).filter((match) => {
-    const leagueName = match.leagueEn || match.league;
-    return isAllowedCompetition(leagueName);
-  });
-}
-
 export async function getServerSideProps(context) {
-  const { filter = 'today', lang = 'ar' } = context.query;
-  const validFilter = ['today', 'yesterday', 'tomorrow'].includes(filter) ? filter : 'today';
+  const query = context.query || {};
+  const filterParam = query.filter;
+  const filter = Array.isArray(filterParam) ? filterParam[0] : filterParam;
+  const validFilter = ['today', 'tomorrow'].includes(filter) ? filter : 'today';
+  const langParam = query.lang;
+  const lang = Array.isArray(langParam) ? langParam[0] : langParam;
 
   let initialMatches = [];
   try {
@@ -38,11 +28,16 @@ export async function getServerSideProps(context) {
     console.error('SSR fetch matches error:', e);
   }
 
-  const filtered = filterMatchesByAllowed(initialMatches);
+  // Ensure props are JSON-serializable (strip rawData to avoid serialization issues)
+  const safeMatches = (initialMatches || []).map((m) => {
+    if (!m || typeof m !== 'object') return null;
+    const { rawData, ...rest } = m;
+    return rest;
+  }).filter(Boolean);
 
   return {
     props: {
-      initialMatches: filtered,
+      initialMatches: safeMatches,
       filter: validFilter,
       initialLang: ['ar', 'fr'].includes(lang) ? lang : 'ar',
     },
@@ -57,7 +52,6 @@ export default function Home({ initialMatches, filter, initialLang }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({ competition: [], country: [], status: [] });
-  const [currentPage, setCurrentPage] = useState(1);
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [serverTimezone, setServerTimezone] = useState(null);
   const [cacheDates, setCacheDates] = useState(null);
@@ -71,7 +65,7 @@ export default function Home({ initialMatches, filter, initialLang }) {
 
   useEffect(() => {
     setActiveFilter(filter);
-    setMatches(initialMatches);
+    setMatches(initialMatches || []);
   }, [filter, initialMatches]);
 
   const loadMatches = async (filterKey) => {
@@ -89,7 +83,7 @@ export default function Home({ initialMatches, filter, initialLang }) {
         default:
           fetched = await getMatchesWithCache(cacheDates?.today || new Date().toISOString().split('T')[0], fetchTodayMatches);
       }
-      setMatches(filterMatchesByAllowed(fetched));
+      setMatches(fetched || []);
     } catch (apiError) {
       setError(apiError.message || t('errors.loading'));
       setMatches([]);
@@ -101,7 +95,6 @@ export default function Home({ initialMatches, filter, initialLang }) {
   const handleFilterChange = (filterKey) => {
     setActiveFilter(filterKey);
     setFilters({ competition: [], country: [], status: [] });
-    setCurrentPage(1);
     const params = new URLSearchParams(router.query);
     params.set('filter', filterKey);
     router.push(`${router.pathname}?${params.toString()}`, undefined, { shallow: true });
@@ -109,7 +102,7 @@ export default function Home({ initialMatches, filter, initialLang }) {
   };
 
   const filteredMatches = useMemo(() => {
-    let result = matches.filter((match) => isAllowedCompetition(match.leagueEn || match.league));
+    let result = matches;
     if (filters.competition?.length) {
       result = result.filter((m) => filters.competition.includes(m.leagueEn || m.league));
     }
@@ -122,26 +115,6 @@ export default function Home({ initialMatches, filter, initialLang }) {
     }
     return result;
   }, [matches, filters]);
-
-  const totalPages = Math.ceil(filteredMatches.length / MATCHES_PER_PAGE);
-
-  useEffect(() => {
-    if (currentPage > totalPages && totalPages > 0) setCurrentPage(1);
-  }, [totalPages, currentPage]);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [filters]);
-
-  const paginatedMatches = useMemo(() => {
-    const start = (currentPage - 1) * MATCHES_PER_PAGE;
-    return filteredMatches.slice(start, start + MATCHES_PER_PAGE);
-  }, [filteredMatches, currentPage]);
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-    if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
 
   const baseTitle = language === 'ar' ? 'كورة للعالم - Koora for the World' : 'Koora for the World - كورة للعالم';
   const getSEOTitle = () => {
@@ -219,23 +192,18 @@ export default function Home({ initialMatches, filter, initialLang }) {
                 <div className="matches-section">
                   <div className="section-header">
                     <h2 className="section-title">{t('matches.title')}</h2>
-                    <div className="matches-info">
-                      {filteredMatches.length !== matches.length && (
-                        <span className="matches-count">
-                          ({filteredMatches.length} {t('matches.from')} {matches.length})
-                        </span>
-                      )}
-                      {totalPages > 1 && (
-                        <span className="pagination-info">
-                          {t('matches.page')} {currentPage} {t('matches.of')} {totalPages}
-                        </span>
-                      )}
-                    </div>
+                    {filteredMatches.length !== matches.length && (
+                      <span className="matches-count">
+                        ({filteredMatches.length} {t('matches.from')} {matches.length})
+                      </span>
+                    )}
                   </div>
-                  <MatchList matches={paginatedMatches || []} isFromAPI />
-                  {totalPages > 1 && (
-                    <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
-                  )}
+                  <MatchList
+                    matches={filteredMatches || []}
+                    isFromAPI
+                    activeFilter={activeFilter}
+                    onViewToday={() => handleFilterChange('today')}
+                  />
                 </div>
               </>
             )}

@@ -16,17 +16,17 @@ const API_FOOTBALL_KEY = '1f864f16d2849e9f399d04930bff7ed3';
 const OPENLIGADB_BASE_URL = 'https://api.openligadb.de/getmatchdata';
 
 // Option 2: Football-Data.org (gratuit, mais limité)
-// Pour contourner CORS, nous utilisons un proxy
-// Si setupProxy.js ne fonctionne pas, utilisez le serveur proxy séparé (proxy-server.js sur port 3001)
+// En SSR (serveur Node) : pas de CORS → appel direct à l'API avec la clé.
+// En navigateur (dev) : CORS → proxy sur port 3001. En production : appel direct.
 const isDevelopment = process.env.NODE_ENV === 'development';
-// Valeur directement dans le code (depuis .env: REACT_APP_USE_SEPARATE_PROXY=true)
 const USE_SEPARATE_PROXY = true;
+const isServer = typeof window === 'undefined';
 
-const FOOTBALL_DATA_BASE_URL = isDevelopment 
-  ? (USE_SEPARATE_PROXY 
-      ? 'http://localhost:3001/api/football-data/v4'  // Utiliser le serveur proxy séparé
-      : '/api/football-data/v4')  // Utiliser setupProxy.js (intégré dans React)
-  : 'https://api.football-data.org/v4'; // URL directe en production (nécessite un backend pour CORS)
+const FOOTBALL_DATA_BASE_URL = isServer
+  ? 'https://api.football-data.org/v4'  // SSR : toujours direct (pas de CORS côté serveur)
+  : (isDevelopment && USE_SEPARATE_PROXY
+      ? 'http://localhost:3001/api/football-data/v4'  // Navigateur en dev : proxy
+      : 'https://api.football-data.org/v4');  // Navigateur en prod : direct
 // Valeur directement dans le code (depuis .env: REACT_APP_FOOTBALL_DATA_KEY est vide, donc on utilise la valeur par défaut)
 const FOOTBALL_DATA_KEY = '48b3e12dda0a4f6eb0e983abe4388681';
 
@@ -242,38 +242,22 @@ export const fetchMatchesFromFootballData = async (date) => {
     // - /matches sans paramètres = matchs d'aujourd'hui
     // - /matches?dateFrom=YYYY-MM-DD&dateTo=YYYY-MM-DD = matchs dans la plage de dates
     
-    // En développement, le proxy (setupProxy.js ou proxy-server.js) ajoutera automatiquement le header X-Auth-Token
-    // En production, on doit l'ajouter nous-mêmes
-    const headers = isDevelopment 
-      ? {}  // Le proxy s'occupe du header en développement
-      : {
-          'X-Auth-Token': FOOTBALL_DATA_KEY,  // Header direct en production
-          'Accept': 'application/json'
-        };
+    // En SSR ou en production : appel direct → on envoie la clé. En dev navigateur avec proxy : le proxy ajoute la clé.
+    const useDirectApi = isServer || (!isDevelopment || !USE_SEPARATE_PROXY);
+    const headers = useDirectApi
+      ? { 'X-Auth-Token': FOOTBALL_DATA_KEY, 'Accept': 'application/json' }
+      : {};
 
-    // Selon la doc : /matches sans params = aujourd'hui, /matches?dateFrom=X&dateTo=Y = plage de dates
-    // Vérifier si c'est aujourd'hui - utiliser /matches sans paramètres (plus simple)
+    // Selon la doc : /matches sans params = aujourd'hui, /matches?dateFrom=X&dateTo=Y = plage
     const todayDate = formatDate(new Date());
-    let url = `${FOOTBALL_DATA_BASE_URL}/matches`;
+    const url = `${FOOTBALL_DATA_BASE_URL}/matches`;
     let params = {};
-    
-    console.log('🌐 Request URL:', url);
-    console.log('🔑 Using proxy:', USE_SEPARATE_PROXY ? 'Separate proxy (port 3001)' : (isDevelopment ? 'setupProxy.js' : 'Direct'));
-    
-    if (date === todayDate) {
-      // Aujourd'hui : utiliser /matches sans paramètres selon la doc
-      console.log('📅 Using /matches endpoint for today (no date params) - returns today\'s matches');
-      // Pas de params - l'API retourne automatiquement les matchs d'aujourd'hui
-    } else {
-      // Autre date : utiliser dateFrom et dateTo
-      params = {
-        dateFrom: date,
-        dateTo: date
-      };
-      console.log('📅 Using /matches with dateFrom and dateTo:', params);
+    if (date !== todayDate) {
+      params = { dateFrom: date, dateTo: date };
     }
-
-    console.log('📤 Making request to:', url, 'with params:', params);
+    console.log('🌐 Request URL:', url);
+    console.log('🔑 Football-Data:', isServer ? 'Direct (SSR)' : (isDevelopment && USE_SEPARATE_PROXY ? 'Proxy' : 'Direct'));
+    console.log('📤 Params:', Object.keys(params).length ? params : '(today - no params)');
     
     const response = await axios.get(url, {
       params: params,
@@ -295,7 +279,6 @@ export const fetchMatchesFromFootballData = async (date) => {
     if (response.data) {
       // Football-Data.org retourne les matchs dans response.data.matches
       let matches = response.data.matches || [];
-      
       console.log('📊 Raw matches count from API:', matches.length);
       
       // Si c'est pour aujourd'hui et qu'on a utilisé /matches sans params,
@@ -489,9 +472,17 @@ export const fetchMatchesFromApiFootball = async (date) => {
     console.log('📋 API-Football Response data:', response.data);
 
     if (response.data) {
-      // API-Football retourne les matchs dans response.data.response
-      const matches = response.data.response || [];
-      
+      // If API returns an error message (e.g. account suspended), treat as no data and try next API
+      const apiErrors = response.data.errors;
+      if (apiErrors && typeof apiErrors === 'object') {
+        const msg = apiErrors.access || apiErrors.token || apiErrors[Object.keys(apiErrors)[0]];
+        if (msg) {
+          console.warn('⚠️ API-Football returned error:', msg);
+          console.warn('💡 Check https://dashboard.api-football.com if your account is suspended or key is invalid.');
+          return [];
+        }
+      }
+      let matches = response.data.response || [];
       console.log('API-Football matches array:', matches);
       console.log('API-Football matches length:', matches.length);
       
@@ -768,14 +759,12 @@ export const fetchTodayMatches = async () => {
   return await fetchMatches(today);
 };
 
-// Fonction pour obtenir les matchs d'hier
 export const fetchYesterdayMatches = async () => {
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
   return await fetchMatches(formatDate(yesterday));
 };
 
-// Fonction pour obtenir les matchs de demain
 export const fetchTomorrowMatches = async () => {
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);

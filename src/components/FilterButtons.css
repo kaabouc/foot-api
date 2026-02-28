@@ -4,6 +4,8 @@
   align-items: center;
   margin-bottom: 30px;
   padding: 15px 0;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
 .timezone-info {
@@ -13,11 +15,15 @@
   font-size: 14px;
   color: #666;
   font-weight: 500;
+  flex-shrink: 0;
 }
 
 .filter-buttons {
   display: flex;
   gap: 10px;
+  flex: 1;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .filter-btn {
@@ -29,6 +35,7 @@
   cursor: pointer;
   transition: all 0.3s ease;
   color: white;
+  min-width: 140px;
 }
 
 .filter-yesterday {
